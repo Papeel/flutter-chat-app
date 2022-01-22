@@ -1,6 +1,8 @@
+import 'package:chat/services/auth_service.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat/models/models.dart';
+import 'package:provider/provider.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 class UsersPage extends StatefulWidget {
@@ -17,20 +19,24 @@ class _UsersPageState extends State<UsersPage> {
 
 
   final users = <User>[
-    User(email: 'nelson@gmail.com',nombre: 'Nelson', uid: '1', online: false,),
-    User(email: 'juan@gmail.com',nombre: 'Juan', uid: '2', online: true,),
-    User(email: 'fernando@gmail.com',nombre: 'Fernando', uid: '3', online: true,),
+    User(email: 'nelson@gmail.com',name: 'Nelson', uid: '1', online: false,),
+    User(email: 'juan@gmail.com',name: 'Juan', uid: '2', online: true,),
+    User(email: 'fernando@gmail.com',name: 'Fernando', uid: '3', online: true,),
   ];
   @override
   Widget build(BuildContext context) {
+    final authService = Provider.of<AuthService>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mi nombre', style: TextStyle(color: Colors.black54),),
+        title: Text(authService.user?.name ?? 'Sin nombre', style: TextStyle(color: Colors.black54),),
         elevation: 1,
         backgroundColor: Colors.white,
         leading: IconButton(
           icon: Icon(Icons.logout, color: Colors.black54,),
-          onPressed: null,
+          onPressed: (){
+            Navigator.pushReplacementNamed(context, 'login');
+            AuthService.deleteToken();
+          },
         ),
         actions: [
           Container(
@@ -64,10 +70,10 @@ class _UsersPageState extends State<UsersPage> {
 
   ListTile _userListTile(User user) {
     return ListTile(
-        title: Text(user.nombre),
+        title: Text(user.name),
         subtitle: Text(user.email),
         leading: CircleAvatar(
-          child: Text(user.nombre.substring(0,2)),
+          child: Text(user.name.substring(0,2)),
           backgroundColor: Colors.blue[100],
         ),
         trailing: Container(
@@ -83,7 +89,6 @@ class _UsersPageState extends State<UsersPage> {
 
   void _loadUsers() async{
     await Future.delayed(Duration(milliseconds: 1000));
-    print('Cargado');
     _refreshController.refreshCompleted();
   }
 }
