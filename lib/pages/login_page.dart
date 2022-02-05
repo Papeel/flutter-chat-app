@@ -1,5 +1,6 @@
 import 'package:chat/helpers/show_alert.dart';
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/socket_services.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat/widgets/logo_widget.dart';
@@ -52,6 +53,7 @@ class __FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: true);
+    final soketService = Provider.of<SocketService>(context, listen: true);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -78,6 +80,7 @@ class __FormState extends State<_Form> {
               FocusScope.of(context).unfocus();
               final loginOK = await authService.login(emailCtrl.text.trim(), passwordCtrl.text.trim());
               if (loginOK){
+                soketService.connect();
                 Navigator.pushReplacementNamed(context, 'users');
               }else{
                 showAlert(context, 'Login incorrecto', 'Revise sus credenciales nuevamente.');

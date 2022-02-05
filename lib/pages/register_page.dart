@@ -1,5 +1,6 @@
 import 'package:chat/helpers/show_alert.dart';
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/socket_services.dart';
 import 'package:flutter/material.dart';
 
 import 'package:chat/widgets/logo_widget.dart';
@@ -53,6 +54,7 @@ class __FormState extends State<_Form> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: true);
+    final socketService = Provider.of<SocketService>(context, listen: true);
     return Container(
       margin: EdgeInsets.only(top: 40),
       padding: EdgeInsets.symmetric(horizontal: 50),
@@ -85,6 +87,7 @@ class __FormState extends State<_Form> {
               FocusScope.of(context).unfocus();
               final registerOK = await authService.register(userdCtrl.text.trim(),emailCtrl.text.trim(), passwordCtrl.text.trim());
               if (registerOK.isEmpty){
+                socketService.connect();
                 Navigator.pushReplacementNamed(context, 'users');
               }else{
                 showAlert(context, 'Registration error', registerOK);
